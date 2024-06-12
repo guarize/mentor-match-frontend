@@ -14,8 +14,11 @@ export default function Home() {
     const fetchCurrentUser = async () => {
       try {
         const response = await axios.get('http://localhost:3000/auth/me');
+        console.log(response.data);
         setUserId(response.data.id);
         fetchMatches(response.data.id);
+
+        return response.data
       } catch (error) {
         console.error('Error fetching current user:', error);
       }
@@ -23,8 +26,11 @@ export default function Home() {
 
     const fetchUsers = async () => {
       try {
+        const meUser = await fetchCurrentUser();
+
         const response = await axios.get('http://localhost:3000/profiles');
-        setUsers(response.data.profiles);
+
+        setUsers(response.data.profiles?.filter((user) => user?.user?.role !== meUser?.role));
       } catch (error) {
         console.error('Error fetching profiles:', error);
       }
